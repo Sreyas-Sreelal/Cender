@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <!-- interface-requires gtk+ 3.0 -->
+  <object class="GtkWindow" id="main_screen">
+    <property name="can_focus">False</property>
+    <property name="title" translatable="yes">Cender</property>
+    <property name="resizable">False</property>
+    <property name="window_position">center</property>
+    <property name="default_width">500</property>
+    <property name="default_height">500</property>
+    <child>
+      <object class="GtkFixed" id="fixed1">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <child>
+          <object class="GtkLabel" id="Title">
+            <property name="width_request">181</property>
+            <property name="height_request">105</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="halign">center</property>
+            <property name="valign">end</property>
+            <property name="margin_left">55</property>
+            <property name="margin_right">45</property>
+            <property name="xalign">0.079999998211860657</property>
+            <property name="yalign">0.50999999046325684</property>
+            <property name="xpad">13</property>
+            <property name="ypad">27</property>
+            <property name="label" translatable="yes">Cender</property>
+            <property name="justify">center</property>
+            <property name="width_chars">10</property>
+            <attributes>
+              <attribute name="font-desc" value="Snap ITC 10"/>
+              <attribute name="scale" value="3"/>
+              <attribute name="background" value="#ffffffffffff"/>
+            </attributes>
+          </object>
+          <packing>
+            <property name="x">129</property>
+            <property name="y">11</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="send_button">
+            <property name="label" translatable="yes">Send</property>
+            <property name="width_request">204</property>
+            <property name="height_request">154</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <signal name="clicked" handler="sndclick" swapped="no"/>
+          </object>
+          <packing>
+            <property name="x">30</property>
+            <property name="y">139</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="recieve_button">
+            <property name="label" translatable="yes">Recieve</property>
+            <property name="width_request">204</property>
+            <property name="height_request">154</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="xalign">0.55000001192092896</property>
+            <signal name="clicked" handler="rcvclk" swapped="no"/>
+          </object>
+          <packing>
+            <property name="x">313</property>
+            <property name="y">144</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkMessageDialog" id="msgbox">
+    <property name="can_focus">False</property>
+    <property name="border_width">5</property>
+    <property name="type_hint">dialog</property>
+    <property name="skip_taskbar_hint">True</property>
+    <child internal-child="vbox">
+      <object class="GtkBox" id="messagedialog-vbox1">
+        <property name="can_focus">False</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">2</property>
+        <child internal-child="action_area">
+          <object class="GtkButtonBox" id="confirm">
+            <property name="can_focus">False</property>
+            <property name="layout_style">end</property>
+            <child>
+              <object class="GtkButton" id="yes">
+                <property name="label" translatable="yes">Yes</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <signal name="clicked" handler="onyes" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="no">
+                <property name="label" translatable="yes">No</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="yalign">0.49000000953674316</property>
+                <signal name="clicked" handler="onno" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="pack_type">end</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+    <action-widgets>
+      <action-widget response="0">yes</action-widget>
+      <action-widget response="0">no</action-widget>
+    </action-widgets>
+  </object>
+  <object class="GtkWindow" id="recieve_screen">
+    <property name="can_focus">False</property>
+    <property name="resizable">False</property>
+    <child>
+      <object class="GtkFixed" id="fixed3">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <child>
+          <object class="GtkProgressBar" id="sendbar1">
+            <property name="width_request">300</property>
+            <property name="height_request">20</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+          </object>
+          <packing>
+            <property name="x">127</property>
+            <property name="y">141</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="recieve_label">
+            <property name="width_request">392</property>
+            <property name="height_request">20</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">recieving....</property>
+          </object>
+          <packing>
+            <property name="x">88</property>
+            <property name="y">48</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkWindow" id="send_screen">
+    <property name="can_focus">False</property>
+    <property name="resizable">False</property>
+    <child>
+      <object class="GtkFixed" id="fixed2">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <child>
+          <object class="GtkProgressBar" id="sendbar">
+            <property name="width_request">300</property>
+            <property name="height_request">20</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+          </object>
+          <packing>
+            <property name="x">140</property>
+            <property name="y">167</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="send_label">
+            <property name="width_request">392</property>
+            <property name="height_request">20</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">sending...</property>
+            <attributes>
+              <attribute name="font-desc" value="Georgia 10"/>
+              <attribute name="scale" value="1"/>
+            </attributes>
+          </object>
+          <packing>
+            <property name="x">92</property>
+            <property name="y">110</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>
