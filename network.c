@@ -1,4 +1,3 @@
-
 #include<string.h>
 #include<winsock2.h>
 #include<gtk/gtk.h>
@@ -11,24 +10,27 @@ int senddata(SOCKET sock, void *buf, int buflen)
     unsigned char *pbuf = (unsigned char *) buf;
     while (buflen > 0)
     {
-        Sleep(100);
+        Sleep(1);
         int num = send(sock, pbuf, buflen, 0);
         if (num == SOCKET_ERROR)
         {
             
-            printf("1st SOCKET_ERROR\n DESC = %ld",WSAGetLastError());
+            printf("\n1st SOCKET_ERROR\n DESC = %ld",WSAGetLastError());
             if (WSAGetLastError() == WSAEWOULDBLOCK){
                 printf("WSA ERROR !!\n");
             
                 continue;
             }
             
-            printf("2nd SOCKET_ERROR\n DESC = %ld",WSAGetLastError());
+            printf("\n2nd SOCKET_ERROR\n DESC = %ld",WSAGetLastError());
             return 0;
         }
         pbuf += num;
         buflen -= num;
     }
+    gtk_widget_hide(send_screen);
+    gtk_widget_show(main_screen);
+
     return 1;
 }
 
@@ -139,7 +141,7 @@ int readfile(SOCKET sock, FILE *f)
     return 1;
 }
 
-void filesend(char filename[])
+void filesend(char filename[54])
 {
     
     printf("%s....\n",filename);
@@ -147,39 +149,33 @@ void filesend(char filename[])
     FILE *filehandle = fopen(filename, "rb");
     if (filehandle != NULL)
     {
-        send(conn,filename,strlen(filename),0);
+        send(conn,filename,54,0);
         char *confirm;
         recv(conn,confirm,10,0);
         printf("Confirmation was : %s",confirm);
         if(!strcmp("Y",confirm))
             sendfile(conn, filehandle);
         fclose(filehandle);
+        closesocket(listener);
+        WSACleanup();
     }
 }
 
 void recievefile()
 {
-    char filename[24],opt[10];
+    char filename[54],opt[10];
+    char *basename;
     recv(conn,filename,sizeof(filename),0);
-    /*printf("Want to recieve : %s ? (Y/N)",filename);
-    printf("%s....\n",filename);
-    scanf(" %s",&opt);*/
-    gtk_widget_hide(main_screen);
-    gtk_widget_show(msgbox);     
-    if(confirm == 1)
-        send(conn,opt,10,0);
-    else
-        confirm = -1;
-
-    strcpy(filename,filename);
-    if(strcmp("Y",opt))
-    {
-        printf("Deniedd!");
-        return;
-    }
-    printf("%s....\n",filename);
-    printf("length = %d\n",strlen(filename));
-    FILE *filehandle = fopen(filename, "wb");
+    
+    strcpy(opt,"Y");
+    send(conn,opt,10,0);
+    printf("\nfile is %s\nbasename is %s",filename,basename); 
+    basename = strrchr(filename, '\\');
+    ++basename;
+   
+    printf("%s....\n",basename);
+    printf("length = %d\n",strlen(basename));
+    FILE *filehandle = fopen(basename, "wb");
     if (filehandle != NULL)
     {
         int ok = readfile(conn, filehandle);
@@ -196,4 +192,8 @@ void recievefile()
         }
    }
     printf("\nOUT OF REACH>>>>>>\n");
+    closesocket(conn);
+    WSACleanup();
+    gtk_widget_hide(recieve_screen);
+    gtk_widget_show(main_screen);
 }

@@ -10,7 +10,11 @@ GtkWidget
           *send_label,
           *recieve_label,
           *send_bar,
-          *recieve_bar;
+          *recieve_bar,
+          *send_button,
+          *recieve_button,
+          *yes_button,
+          *no_button;
 
 void gui_init();
 void on_window_main_destroy();
