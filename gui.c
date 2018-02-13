@@ -8,6 +8,9 @@ extern int confirm;
 
 void sndclick()
 {
+    int result,addrlen;
+    PHOSTENT hostinfo;
+    char name[255],*ip;
     gtk_widget_hide(main_screen); 
     gtk_widget_show(send_screen);     
     //char info[55];
@@ -22,14 +25,11 @@ void sndclick()
     addr.sin_port = htons(7089);
     addr.sin_family = AF_INET;
     listener = socket(AF_INET,SOCK_STREAM,0);
- 
-    
-    
     printf("Reached sndclikc\n");
-    int result;
     result = bind(listener,(SOCKADDR*)&addr,sizeof(addr));
-    
-    char *ip = inet_ntoa(addr.sin_addr);
+    gethostname(name,sizeof(name));
+    hostinfo = gethostbyname(name);
+    ip = inet_ntoa(*(struct in_addr *)hostinfo->h_addr_list[0]);
     printf("Ip is %s \n",ip);
 
     gtk_label_set_text(info_label,ip);
@@ -38,7 +38,8 @@ void sndclick()
         printf("bind failed with error: %d\n", WSAGetLastError());
         return;
     }
-    int addrlen = sizeof(addr);
+
+    addrlen = sizeof(addr);
     listen(listener,SOMAXCONN);    
     
     char *filename;
