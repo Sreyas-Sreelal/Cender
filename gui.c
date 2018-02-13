@@ -8,6 +8,9 @@ extern int confirm;
 
 void sndclick()
 {
+    gtk_widget_hide(main_screen); 
+    gtk_widget_show(send_screen);     
+    //char info[55];
     DLLVERSION = MAKEWORD(2,1);
     if(WSAStartup(DLLVERSION,&wsdata)!=0)
     {
@@ -19,11 +22,17 @@ void sndclick()
     addr.sin_port = htons(7089);
     addr.sin_family = AF_INET;
     listener = socket(AF_INET,SOCK_STREAM,0);
-    gtk_widget_show(send_screen);     
-    gtk_widget_hide(main_screen); 
+ 
+    
+    
     printf("Reached sndclikc\n");
     int result;
     result = bind(listener,(SOCKADDR*)&addr,sizeof(addr));
+    
+    char *ip = inet_ntoa(addr.sin_addr);
+    printf("Ip is %s \n",ip);
+
+    gtk_label_set_text(info_label,ip);
     if (result == SOCKET_ERROR) 
     {
         printf("bind failed with error: %d\n", WSAGetLastError());
@@ -31,7 +40,7 @@ void sndclick()
     }
     int addrlen = sizeof(addr);
     listen(listener,SOMAXCONN);    
-        
+    
     char *filename;
     GtkWidget *dialog;
     GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_OPEN;
@@ -66,6 +75,18 @@ void sndclick()
 
 void rcvclk()
 {
+    printf("Reached rcvclk\n");
+    gtk_widget_hide(main_screen);
+    gtk_widget_show(intermediate_rcv);
+    
+}
+
+void on_start_recieving()
+{
+    gtk_widget_hide(intermediate_rcv);
+    char ip[11];
+    strcpy(ip,gtk_entry_get_text (ip_input));
+    printf("Ip entered is %s\n",ip);
     DLLVERSION = MAKEWORD(2,1);
     if(WSAStartup(DLLVERSION,&wsdata)!=0)
     {
@@ -79,11 +100,8 @@ void rcvclk()
     addr.sin_family = AF_INET;
     listener = socket(AF_INET,SOCK_STREAM,0);
 
-    char ip[32];
-
     gtk_widget_show(recieve_screen);     
-    gtk_widget_hide(main_screen); 
-    scanf(" %s",&ip);
+    //scanf(" %s",&ip);
     addr.sin_addr.s_addr = inet_addr(ip);
     conn = socket(AF_INET,SOCK_STREAM,0);
     
@@ -95,7 +113,6 @@ void rcvclk()
     
     else
         recievefile();  
-    
 }
 
 void on_window_main_destroy()
@@ -129,21 +146,25 @@ void gui_init()
        // gtk_builder_connect_signals(builder,NULL);
         recieve_screen = GTK_WIDGET(gtk_builder_get_object(builder, "recieve_screen"));
         send_screen = GTK_WIDGET(gtk_builder_get_object(builder, "send_screen"));
+        intermediate_rcv = GTK_WIDGET(gtk_builder_get_object(builder, "intermediate_rcv"));
         msgbox = GTK_WIDGET(gtk_builder_get_object(builder,"msgbox"));
-        send_label = GTK_WIDGET(gtk_builder_get_object(builder,"send_label"));
-        recieve_label = GTK_WIDGET(gtk_builder_get_object(builder,"recieve_label"));
-        send_bar = GTK_WIDGET(gtk_builder_get_object(builder,"send_bar"));
-        recieve_bar = GTK_WIDGET(gtk_builder_get_object(builder,"recieve_bar"));
+        send_label = GTK_LABEL(gtk_builder_get_object(builder,"send_label"));
+        recieve_label = GTK_LABEL(gtk_builder_get_object(builder,"recieve_label"));
+        info_label = GTK_LABEL(gtk_builder_get_object(builder,"info_lbl"));
+        send_bar = GTK_PROGRESS_BAR(gtk_builder_get_object(builder,"send_bar"));
+        recieve_bar = GTK_PROGRESS_BAR(gtk_builder_get_object(builder,"recieve_bar"));
         send_button = GTK_WIDGET(gtk_builder_get_object(builder,"send_button"));
         recieve_button = GTK_WIDGET(gtk_builder_get_object(builder,"recieve_button"));
+        start_rcv_button = GTK_WIDGET(gtk_builder_get_object(builder,"start_rcv_button"));
         yes_button = GTK_WIDGET(gtk_builder_get_object(builder,"yes_button"));
         no_button = GTK_WIDGET(gtk_builder_get_object(builder,"no_button"));
+        ip_input = GTK_ENTRY(gtk_builder_get_object(builder,"input_ip"));
 
         g_signal_connect (send_button, "clicked", G_CALLBACK (sndclick), NULL);
         g_signal_connect (recieve_button, "clicked", G_CALLBACK (rcvclk), NULL);
         g_signal_connect (yes_button, "clicked", G_CALLBACK (onyes), NULL);
         g_signal_connect (no_button, "clicked", G_CALLBACK (onno), NULL);
-        
+        g_signal_connect (start_rcv_button, "clicked", G_CALLBACK (on_start_recieving), NULL);
         g_object_unref(builder);
     
         gtk_widget_show(main_screen);                

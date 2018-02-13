@@ -16,9 +16,9 @@ int senddata(SOCKET sock, void *buf, int buflen)
         {
             
             printf("\n1st SOCKET_ERROR\n DESC = %ld",WSAGetLastError());
-            if (WSAGetLastError() == WSAEWOULDBLOCK){
+            if (WSAGetLastError() == WSAEWOULDBLOCK)
+            {
                 printf("WSA ERROR !!\n");
-            
                 continue;
             }
             
@@ -42,8 +42,13 @@ int sendlong(SOCKET sock, long value)
 
 int sendfile(SOCKET sock, FILE *f)
 {
+    while (gtk_events_pending ())
+        gtk_main_iteration_do (FALSE);
+  
     fseek(f, 0, SEEK_END);
+    gfloat progress = 0.0;
     long filesize = ftell(f);
+    long fixedsize = filesize;
     rewind(f);
     if (filesize == EOF)
         return 0;
@@ -61,6 +66,11 @@ int sendfile(SOCKET sock, FILE *f)
             if (!senddata(sock, buffer,num))
                 return 0;
             filesize -= num;
+            progress += num;
+            //printf("progress : %f\n",progress);
+            gtk_progress_bar_set_fraction(send_bar,progress/fixedsize);
+            while (gtk_events_pending ()) 
+                gtk_main_iteration_do (FALSE);
         }
         while (filesize > 0);
     }
@@ -71,6 +81,7 @@ int sendfile(SOCKET sock, FILE *f)
 int readdata(SOCKET sock, void *buf, int buflen)
 {
     unsigned char *pbuf = (unsigned char *) buf;
+    
 
     while (buflen > 0)
     {
@@ -78,7 +89,8 @@ int readdata(SOCKET sock, void *buf, int buflen)
         if (num == SOCKET_ERROR)
         {
             printf("1st SOCKET_ERROR\n DESC = %ld",WSAGetLastError());
-            if (WSAGetLastError() == WSAEWOULDBLOCK){
+            if (WSAGetLastError() == WSAEWOULDBLOCK)
+            {
                 printf("WSA ERROR !!\n");
             
                 continue;
@@ -94,6 +106,7 @@ int readdata(SOCKET sock, void *buf, int buflen)
         }
         pbuf += num;
         buflen -= num;
+        
     }
 
     return 1;
@@ -109,11 +122,17 @@ int readlong(SOCKET sock, long *value)
 
 int readfile(SOCKET sock, FILE *f)
 {
+    while (gtk_events_pending ())
+        gtk_main_iteration_do (FALSE);
+
     long filesize;
+    gfloat progress=0.0;
     if (!readlong(sock, &filesize)){
         printf("Length problem \n");
         return 0;
     }
+    long fixedsize = filesize;
+
         
     if (filesize > 0)
     {
@@ -135,6 +154,12 @@ int readfile(SOCKET sock, FILE *f)
             }
             while (offset < num);
             filesize -= num;
+            progress += num;
+            //printf("progress : %f\n",progress);
+            gtk_progress_bar_set_fraction(recieve_bar,progress/fixedsize);
+            while (gtk_events_pending ())
+                gtk_main_iteration_do (FALSE);
+          
         }
         while (filesize > 0);
     }
