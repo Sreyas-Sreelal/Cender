@@ -12,7 +12,8 @@ void sndclick()
     PHOSTENT hostinfo;
     char name[255],*ip;
     gtk_widget_hide(main_screen); 
-    gtk_widget_show(send_screen);     
+    gtk_widget_show(send_screen);   
+   
     //char info[55];
     DLLVERSION = MAKEWORD(2,1);
     if(WSAStartup(DLLVERSION,&wsdata)!=0)
@@ -85,9 +86,9 @@ void rcvclk()
 void on_start_recieving()
 {
     gtk_widget_hide(intermediate_rcv);
-    char ip[11];
+    char ip[15];
     strcpy(ip,gtk_entry_get_text (ip_input));
-    printf("Ip entered is %s\n",ip);
+    printf("Ip entered is %s\n length is %d",ip,strlen(ip));
     DLLVERSION = MAKEWORD(2,1);
     if(WSAStartup(DLLVERSION,&wsdata)!=0)
     {
@@ -96,7 +97,6 @@ void on_start_recieving()
     }
     
     int addrlen = sizeof(addr);
-    addr.sin_addr.s_addr = inet_addr("0.0.0.0");
     addr.sin_port = htons(7089);
     addr.sin_family = AF_INET;
     listener = socket(AF_INET,SOCK_STREAM,0);

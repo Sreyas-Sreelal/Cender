@@ -28,9 +28,7 @@ int senddata(SOCKET sock, void *buf, int buflen)
         pbuf += num;
         buflen -= num;
     }
-    gtk_widget_hide(send_screen);
-    gtk_widget_show(main_screen);
-
+    
     return 1;
 }
 
@@ -74,6 +72,8 @@ int sendfile(SOCKET sock, FILE *f)
         }
         while (filesize > 0);
     }
+    gtk_widget_hide(send_screen);
+    gtk_widget_show(main_screen);
     return 1;
 }
 
