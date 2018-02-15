@@ -19,7 +19,7 @@
             <property name="height_request">22</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="max_length">11</property>
+            <property name="max_length">15</property>
             <property name="invisible_char">●</property>
           </object>
           <packing>
