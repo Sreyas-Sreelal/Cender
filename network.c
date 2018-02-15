@@ -8,13 +8,13 @@
 int senddata(SOCKET sock, void *buf, int buflen)
 {
     unsigned char *pbuf = (unsigned char *) buf;
+    int num;
     while (buflen > 0)
     {
-        Sleep(1);
-        int num = send(sock, pbuf, buflen, 0);
+        //Sleep(1);
+        num = send(sock, pbuf, buflen, 0);
         if (num == SOCKET_ERROR)
-        {
-            
+        {            
             printf("\n1st SOCKET_ERROR\n DESC = %ld",WSAGetLastError());
             if (WSAGetLastError() == WSAEWOULDBLOCK)
             {
@@ -55,9 +55,10 @@ int sendfile(SOCKET sock, FILE *f)
     if (filesize > 0)
     {
         char buffer[1024];
+        size_t num;
         do
         {
-            size_t num = min(filesize, sizeof(buffer));
+            num = min(filesize, sizeof(buffer));
             num = fread(buffer, 1, num, f);
             if (num < 1)
                 return 0;
@@ -81,11 +82,10 @@ int sendfile(SOCKET sock, FILE *f)
 int readdata(SOCKET sock, void *buf, int buflen)
 {
     unsigned char *pbuf = (unsigned char *) buf;
-    
-
+    int num;
     while (buflen > 0)
     {
-        int num = recv(sock, pbuf, buflen, 0);
+        num = recv(sock, pbuf, buflen, 0);
         if (num == SOCKET_ERROR)
         {
             printf("1st SOCKET_ERROR\n DESC = %ld",WSAGetLastError());
@@ -131,37 +131,43 @@ int readfile(SOCKET sock, FILE *f)
         printf("Length problem \n");
         return 0;
     }
+    
     long fixedsize = filesize;
-
         
     if (filesize > 0)
     {
         char buffer[1024];
+        int num,offset;
+        size_t written;
+
         do
         {
-            int num = min(filesize, sizeof(buffer));
-            if (!readdata(sock, buffer, num)){
+            num = min(filesize, sizeof(buffer));
+            offset = 0;
+
+            if (!readdata(sock, buffer, num))
+            {
                 printf("Data problem\n");
                 return 0;
             }
-            int offset = 0;
+                        
             do
             {
-                size_t written = fwrite(&buffer[offset], 1, num-offset, f);
+                written = fwrite(&buffer[offset], 1, num-offset, f);
                 if (written < 1)
                     return 0;
                 offset += written;
-            }
-            while (offset < num);
+            } while (offset < num);
+            
             filesize -= num;
             progress += num;
             //printf("progress : %f\n",progress);
             gtk_progress_bar_set_fraction(recieve_bar,progress/fixedsize);
+            
             while (gtk_events_pending ())
                 gtk_main_iteration_do (FALSE);
           
-        }
-        while (filesize > 0);
+        } while (filesize > 0);
     }
     return 1;
 }
@@ -188,19 +194,17 @@ void filesend(char filename[54])
 
 void recievefile()
 {
-    char filename[54],opt[10];
-    char *basename;
-    recv(conn,filename,sizeof(filename),0);
+    char filename[54],opt[10],*basename;
     
+    recv(conn,filename,sizeof(filename),0);
     strcpy(opt,"Y");
     send(conn,opt,10,0);
-    printf("\nfile is %s\nbasename is %s",filename,basename); 
     basename = strrchr(filename, '\\');
     ++basename;
-   
-    printf("%s....\n",basename);
+    printf("\nfile is %s\nbasename is %s",filename,basename);
     printf("length = %d\n",strlen(basename));
     FILE *filehandle = fopen(basename, "wb");
+    
     if (filehandle != NULL)
     {
         int ok = readfile(conn, filehandle);
@@ -210,13 +214,15 @@ void recievefile()
         {
             printf("FIle is ok!!!");
         }
+        
         else
         {
             printf("ERRORROROROROOROR NOT OKAY :(((\n");
             remove(filename);
         }
-   }
-    printf("\nOUT OF REACH>>>>>>\n");
+    }
+    
+    printf("\nDone\n");
     closesocket(conn);
     WSACleanup();
     gtk_widget_hide(recieve_screen);
