@@ -8,6 +8,7 @@ extern int confirm;
 
 void on_send_button_clicked()
 {
+    
     int result,addrlen;
     PHOSTENT hostinfo;
     char name[255],*ip;
@@ -77,6 +78,7 @@ void on_send_button_clicked()
 
 void on_recieve_button_clicked()
 {
+   
     printf("Reached on_recieve_button_clicked\n");
     gtk_widget_hide(main_screen);
     gtk_widget_show(intermediate_rcv);
@@ -85,6 +87,7 @@ void on_recieve_button_clicked()
 
 void on_start_recieving()
 {
+    
     gtk_widget_hide(intermediate_rcv);
     char ip[15];
     strcpy(ip,gtk_entry_get_text (ip_input));
@@ -114,60 +117,91 @@ void on_start_recieving()
     
     else
         recievefile();  
+
 }
 
 void on_window_main_destroy()
 {
+    
     gtk_main_quit();
+
+}
+void on_send_screen_destroy()
+{
+
+    closesocket(listener);
+    WSACleanup();
+    gtk_widget_show(main_screen);
+
+}
+void on_intermediate_rcv_destroy()
+{
+    gtk_widget_show(main_screen);
+}
+
+void on_recieve_screen_destroy()
+{
+    closesocket(conn);
+    WSACleanup();
+    gtk_widget_show(main_screen);
+
 }
 
 void on_yes_button_clicked()
 {
+    
     printf("Clicked yes\n");
     confirm = 1;
     gtk_widget_show(main_screen);     
     gtk_widget_hide(msgbox);     
+
 }
 
 void on_no_button_clicked()
 { 
+    
     printf("Clicked no\n");
     confirm = 0;
     gtk_widget_show(main_screen);
-    gtk_widget_hide(msgbox);          
-}
+    gtk_widget_hide(msgbox);     
 
+}
 
 void gui_init()
 {
-        builder = gtk_builder_new();
-        gtk_builder_add_from_file (builder, "cender.glade", NULL);
         
-        main_screen = GTK_WIDGET(gtk_builder_get_object(builder, "main_screen"));
-       // gtk_builder_connect_signals(builder,NULL);
-        recieve_screen = GTK_WIDGET(gtk_builder_get_object(builder, "recieve_screen"));
-        send_screen = GTK_WIDGET(gtk_builder_get_object(builder, "send_screen"));
-        intermediate_rcv = GTK_WIDGET(gtk_builder_get_object(builder, "intermediate_rcv"));
-        msgbox = GTK_WIDGET(gtk_builder_get_object(builder,"msgbox"));
-        send_label = GTK_LABEL(gtk_builder_get_object(builder,"send_label"));
-        recieve_label = GTK_LABEL(gtk_builder_get_object(builder,"recieve_label"));
-        info_label = GTK_LABEL(gtk_builder_get_object(builder,"info_lbl"));
-        send_bar = GTK_PROGRESS_BAR(gtk_builder_get_object(builder,"send_bar"));
-        recieve_bar = GTK_PROGRESS_BAR(gtk_builder_get_object(builder,"recieve_bar"));
-        send_button = GTK_WIDGET(gtk_builder_get_object(builder,"send_button"));
-        recieve_button = GTK_WIDGET(gtk_builder_get_object(builder,"recieve_button"));
-        start_rcv_button = GTK_WIDGET(gtk_builder_get_object(builder,"start_rcv_button"));
-        yes_button = GTK_WIDGET(gtk_builder_get_object(builder,"yes_button"));
-        no_button = GTK_WIDGET(gtk_builder_get_object(builder,"no_button"));
-        ip_input = GTK_ENTRY(gtk_builder_get_object(builder,"input_ip"));
-
-        g_signal_connect (send_button, "clicked", G_CALLBACK (on_send_button_clicked), NULL);
-        g_signal_connect (recieve_button, "clicked", G_CALLBACK (on_recieve_button_clicked), NULL);
-        g_signal_connect (yes_button, "clicked", G_CALLBACK (on_yes_button_clicked), NULL);
-        g_signal_connect (no_button, "clicked", G_CALLBACK (on_no_button_clicked), NULL);
-        g_signal_connect (start_rcv_button, "clicked", G_CALLBACK (on_start_recieving), NULL);
-        g_object_unref(builder);
+    builder = gtk_builder_new();
+    gtk_builder_add_from_file (builder, "cender.glade", NULL);
     
-        gtk_widget_show(main_screen);                
-        gtk_main();
+    main_screen = GTK_WIDGET(gtk_builder_get_object(builder, "main_screen"));
+    // gtk_builder_connect_signals(builder,NULL);
+    recieve_screen = GTK_WIDGET(gtk_builder_get_object(builder, "recieve_screen"));
+    send_screen = GTK_WIDGET(gtk_builder_get_object(builder, "send_screen"));
+    intermediate_rcv = GTK_WIDGET(gtk_builder_get_object(builder, "intermediate_rcv"));
+    msgbox = GTK_WIDGET(gtk_builder_get_object(builder,"msgbox"));
+    send_label = GTK_LABEL(gtk_builder_get_object(builder,"send_label"));
+    recieve_label = GTK_LABEL(gtk_builder_get_object(builder,"recieve_label"));
+    info_label = GTK_LABEL(gtk_builder_get_object(builder,"info_lbl"));
+    send_bar = GTK_PROGRESS_BAR(gtk_builder_get_object(builder,"send_bar"));
+    recieve_bar = GTK_PROGRESS_BAR(gtk_builder_get_object(builder,"recieve_bar"));
+    send_button = GTK_WIDGET(gtk_builder_get_object(builder,"send_button"));
+    recieve_button = GTK_WIDGET(gtk_builder_get_object(builder,"recieve_button"));
+    start_rcv_button = GTK_WIDGET(gtk_builder_get_object(builder,"start_rcv_button"));
+    yes_button = GTK_WIDGET(gtk_builder_get_object(builder,"yes_button"));
+    no_button = GTK_WIDGET(gtk_builder_get_object(builder,"no_button"));
+    ip_input = GTK_ENTRY(gtk_builder_get_object(builder,"input_ip"));
+
+    g_signal_connect (send_button, "clicked", G_CALLBACK (on_send_button_clicked), NULL);
+    g_signal_connect (recieve_button, "clicked", G_CALLBACK (on_recieve_button_clicked), NULL);
+    g_signal_connect (yes_button, "clicked", G_CALLBACK (on_yes_button_clicked), NULL);
+    g_signal_connect (no_button, "clicked", G_CALLBACK (on_no_button_clicked), NULL);
+    g_signal_connect (main_screen, "destroy", G_CALLBACK (on_window_main_destroy), NULL);
+    g_signal_connect (recieve_screen, "destroy", G_CALLBACK (on_recieve_screen_destroy), NULL);
+    g_signal_connect (send_screen, "destroy", G_CALLBACK (on_send_screen_destroy), NULL);
+    g_signal_connect (intermediate_rcv, "destroy", G_CALLBACK (on_intermediate_rcv_destroy), NULL);
+    g_object_unref(builder);
+
+    gtk_widget_show(main_screen);                
+    gtk_main();
+
 }

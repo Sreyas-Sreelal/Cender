@@ -13,11 +13,14 @@ GtkWidget
           *start_rcv_button,
           *yes_button,
           *no_button;
+
 GtkProgressBar
         *send_bar,
         *recieve_bar;
+
 GtkEntry          
         *ip_input;
+
 GtkLabel
         *send_label,
         *recieve_label,
@@ -30,4 +33,6 @@ void on_recieve_button_clicked();
 void on_yes_button_clicked();
 void on_no_button_clicked();
 void on_start_recieving();
-
+void on_send_screen_destroy();
+void on_recieve_screen_destroy();
+void on_intermediate_rcv_destroy();

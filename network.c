@@ -7,15 +7,19 @@
 
 int senddata(SOCKET sock, void *buf, int buflen)
 {
+    
     unsigned char *pbuf = (unsigned char *) buf;
     int num;
+    
     while (buflen > 0)
     {
         //Sleep(1);
         num = send(sock, pbuf, buflen, 0);
+        
         if (num == SOCKET_ERROR)
         {            
             printf("\n1st SOCKET_ERROR\n DESC = %ld",WSAGetLastError());
+            
             if (WSAGetLastError() == WSAEWOULDBLOCK)
             {
                 printf("WSA ERROR !!\n");
@@ -24,38 +28,51 @@ int senddata(SOCKET sock, void *buf, int buflen)
             
             printf("\n2nd SOCKET_ERROR\n DESC = %ld",WSAGetLastError());
             return 0;
+        
         }
+        
         pbuf += num;
         buflen -= num;
+    
     }
     
     return 1;
+
 }
 
 int sendlong(SOCKET sock, long value)
 {
+    
     value = htonl(value);
     return senddata(sock, &value, sizeof(value));
+
 }
 
 int sendfile(SOCKET sock, FILE *f)
 {
+    
     while (gtk_events_pending ())
         gtk_main_iteration_do (FALSE);
   
     fseek(f, 0, SEEK_END);
+    
     gfloat progress = 0.0;
     long filesize = ftell(f);
     long fixedsize = filesize;
+    
     rewind(f);
+    
     if (filesize == EOF)
         return 0;
+    
     if (!sendlong(sock, filesize))
         return 0;
+    
     if (filesize > 0)
     {
         char buffer[1024];
         size_t num;
+
         do
         {
             num = min(filesize, sizeof(buffer));
@@ -68,24 +85,30 @@ int sendfile(SOCKET sock, FILE *f)
             progress += num;
             //printf("progress : %f\n",progress);
             gtk_progress_bar_set_fraction(send_bar,progress/fixedsize);
+            
             while (gtk_events_pending ()) 
                 gtk_main_iteration_do (FALSE);
-        }
-        while (filesize > 0);
+                
+        }while (filesize > 0);
     }
     gtk_widget_hide(send_screen);
     gtk_widget_show(main_screen);
+
     return 1;
+
 }
 
 
 int readdata(SOCKET sock, void *buf, int buflen)
 {
+    
     unsigned char *pbuf = (unsigned char *) buf;
     int num;
+    
     while (buflen > 0)
     {
         num = recv(sock, pbuf, buflen, 0);
+        
         if (num == SOCKET_ERROR)
         {
             printf("1st SOCKET_ERROR\n DESC = %ld",WSAGetLastError());
@@ -99,11 +122,13 @@ int readdata(SOCKET sock, void *buf, int buflen)
             printf("2nd SOCKET_ERROR\n DESC = %ld",WSAGetLastError());
             return 0;
         }
+        
         else if (num == 0){
             printf("NUM==0 error!!");
         
             return 0;
         }
+        
         pbuf += num;
         buflen -= num;
         
@@ -114,14 +139,17 @@ int readdata(SOCKET sock, void *buf, int buflen)
 
 int readlong(SOCKET sock, long *value)
 {
+    
     if (!readdata(sock, value, sizeof(value)))
         return 0;
     *value = ntohl(*value);
     return 1;
+
 }
 
 int readfile(SOCKET sock, FILE *f)
 {
+    
     while (gtk_events_pending ())
         gtk_main_iteration_do (FALSE);
 
@@ -170,6 +198,7 @@ int readfile(SOCKET sock, FILE *f)
         } while (filesize > 0);
     }
     return 1;
+
 }
 
 void filesend(char filename[54])
@@ -190,10 +219,12 @@ void filesend(char filename[54])
         closesocket(listener);
         WSACleanup();
     }
+
 }
 
 void recievefile()
 {
+    
     char filename[54],opt[10],*basename;
     
     recv(conn,filename,sizeof(filename),0);
@@ -227,4 +258,5 @@ void recievefile()
     WSACleanup();
     gtk_widget_hide(recieve_screen);
     gtk_widget_show(main_screen);
+
 }
