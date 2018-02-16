@@ -169,10 +169,11 @@ void on_no_button_clicked()
 
 void gui_init()
 {
-        
+    cssloader = gtk_css_provider_new ();
     builder = gtk_builder_new();
     gtk_builder_add_from_file (builder, "cender.glade", NULL);
-    
+    gtk_css_provider_load_from_path(cssloader,"style.css",NULL);
+    printf("\nDebug\n");
     main_screen = GTK_WIDGET(gtk_builder_get_object(builder, "main_screen"));
     // gtk_builder_connect_signals(builder,NULL);
     recieve_screen = GTK_WIDGET(gtk_builder_get_object(builder, "recieve_screen"));
@@ -191,6 +192,8 @@ void gui_init()
     no_button = GTK_WIDGET(gtk_builder_get_object(builder,"no_button"));
     ip_input = GTK_ENTRY(gtk_builder_get_object(builder,"input_ip"));
 
+    gtk_style_context_add_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(cssloader), GTK_STYLE_PROVIDER_PRIORITY_USER);
+
     g_signal_connect (send_button, "clicked", G_CALLBACK (on_send_button_clicked), NULL);
     g_signal_connect (recieve_button, "clicked", G_CALLBACK (on_recieve_button_clicked), NULL);
     g_signal_connect (yes_button, "clicked", G_CALLBACK (on_yes_button_clicked), NULL);
@@ -201,7 +204,7 @@ void gui_init()
     g_signal_connect (intermediate_rcv, "destroy", G_CALLBACK (on_intermediate_rcv_destroy), NULL);
     g_object_unref(builder);
 
-    gtk_widget_show(main_screen);                
+    gtk_widget_show_all(main_screen);                
     gtk_main();
 
 }

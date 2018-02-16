@@ -2,6 +2,8 @@
 
 GtkBuilder *builder; 
 
+GtkCssProvider *cssloader;
+
 GtkWidget 
           *main_screen,
           *recieve_screen,
@@ -25,7 +27,8 @@ GtkLabel
         *send_label,
         *recieve_label,
         *info_label;
-
+        
+       
 void gui_init();
 void on_window_main_destroy();
 void on_send_button_clicked();
