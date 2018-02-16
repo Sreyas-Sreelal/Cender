@@ -6,7 +6,7 @@
 
 extern int confirm;
 
-void sndclick()
+void on_send_button_clicked()
 {
     int result,addrlen;
     PHOSTENT hostinfo;
@@ -75,9 +75,9 @@ void sndclick()
     
 }
 
-void rcvclk()
+void on_recieve_button_clicked()
 {
-    printf("Reached rcvclk\n");
+    printf("Reached on_recieve_button_clicked\n");
     gtk_widget_hide(main_screen);
     gtk_widget_show(intermediate_rcv);
     
@@ -121,7 +121,7 @@ void on_window_main_destroy()
     gtk_main_quit();
 }
 
-void onyes()
+void on_yes_button_clicked()
 {
     printf("Clicked yes\n");
     confirm = 1;
@@ -129,7 +129,7 @@ void onyes()
     gtk_widget_hide(msgbox);     
 }
 
-void onno()
+void on_no_button_clicked()
 { 
     printf("Clicked no\n");
     confirm = 0;
@@ -161,10 +161,10 @@ void gui_init()
         no_button = GTK_WIDGET(gtk_builder_get_object(builder,"no_button"));
         ip_input = GTK_ENTRY(gtk_builder_get_object(builder,"input_ip"));
 
-        g_signal_connect (send_button, "clicked", G_CALLBACK (sndclick), NULL);
-        g_signal_connect (recieve_button, "clicked", G_CALLBACK (rcvclk), NULL);
-        g_signal_connect (yes_button, "clicked", G_CALLBACK (onyes), NULL);
-        g_signal_connect (no_button, "clicked", G_CALLBACK (onno), NULL);
+        g_signal_connect (send_button, "clicked", G_CALLBACK (on_send_button_clicked), NULL);
+        g_signal_connect (recieve_button, "clicked", G_CALLBACK (on_recieve_button_clicked), NULL);
+        g_signal_connect (yes_button, "clicked", G_CALLBACK (on_yes_button_clicked), NULL);
+        g_signal_connect (no_button, "clicked", G_CALLBACK (on_no_button_clicked), NULL);
         g_signal_connect (start_rcv_button, "clicked", G_CALLBACK (on_start_recieving), NULL);
         g_object_unref(builder);
     

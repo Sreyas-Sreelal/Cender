@@ -21,8 +21,7 @@ int main(int argc, char *argv[])
     int nCount = 0;
     while(hostinfo->h_addr_list[nCount])
     {
-     ip = inet_ntoa(*(
-          struct in_addr *)hostinfo->h_addr_list[nCount]);
+     ip = inet_ntoa(*(struct in_addr *)hostinfo->h_addr_list[nCount]);
  
      printf("IP #%d: %s\n", ++nCount, ip);
     }
