@@ -91,8 +91,7 @@ int sendfile(SOCKET sock, FILE *f)
                 
         }while (filesize > 0);
     }
-    gtk_widget_hide(send_screen);
-    gtk_widget_show(main_screen);
+  
 
     return 1;
 
@@ -216,8 +215,11 @@ void filesend(char filename[54])
         if(!strcmp("Y",confirm))
             sendfile(conn, filehandle);
         fclose(filehandle);
+        closesocket(conn);
         closesocket(listener);
         WSACleanup();
+        gtk_widget_hide(send_screen);
+        gtk_widget_show(main_screen);
     }
 
 }

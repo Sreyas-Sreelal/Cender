@@ -34,6 +34,7 @@ void on_send_button_clicked()
     printf("Ip is %s \n",ip);
 
     gtk_label_set_text(info_label,ip);
+    
     if (result == SOCKET_ERROR) 
     {
         printf("bind failed with error: %d\n", WSAGetLastError());
@@ -135,6 +136,7 @@ void on_send_cancel_button_clicked()
 {
     
     closesocket(listener);
+    closesocket(conn);
     WSACleanup();
     gtk_widget_hide(send_screen);
     gtk_widget_show(main_screen);
