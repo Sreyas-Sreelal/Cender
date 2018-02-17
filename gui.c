@@ -3,7 +3,6 @@
 #include "gui.h"
 #include "network.h"
 
-
 extern int confirm;
 
 void on_send_button_clicked()
@@ -56,6 +55,7 @@ void on_send_button_clicked()
                                         "_Open",
                                         GTK_RESPONSE_ACCEPT,
                                         NULL);
+
     gint res = gtk_dialog_run (GTK_DIALOG (dialog));
     
     if (res == GTK_RESPONSE_ACCEPT)
@@ -63,6 +63,7 @@ void on_send_button_clicked()
         GtkFileChooser *chooser = GTK_FILE_CHOOSER (dialog);
         filename = gtk_file_chooser_get_filename (chooser);
         gtk_widget_destroy (dialog);
+        gtk_widget_show(send_screen);
         conn = accept(listener,(SOCKADDR*)&addr,&addrlen);
         
         if(conn == 0)
@@ -120,6 +121,26 @@ void on_start_recieving()
 
 }
 
+void on_recieve_cancel_button_clicked()
+{
+    
+    closesocket(conn);
+    WSACleanup();
+    gtk_widget_hide(recieve_screen);
+    gtk_widget_show(main_screen);
+
+}
+
+void on_send_cancel_button_clicked()
+{
+    
+    closesocket(listener);
+    WSACleanup();
+    gtk_widget_hide(send_screen);
+    gtk_widget_show(main_screen);
+
+}
+
 void on_window_main_destroy()
 {
     
@@ -131,19 +152,19 @@ void on_send_screen_destroy()
 
     closesocket(listener);
     WSACleanup();
-    gtk_widget_show(main_screen);
+    gtk_main_quit();
 
 }
 void on_intermediate_rcv_destroy()
 {
-    gtk_widget_show(main_screen);
+    gtk_main_quit();
 }
 
 void on_recieve_screen_destroy()
 {
     closesocket(conn);
     WSACleanup();
-    gtk_widget_show(main_screen);
+    gtk_main_quit();
 
 }
 
@@ -190,18 +211,25 @@ void gui_init()
     start_rcv_button = GTK_WIDGET(gtk_builder_get_object(builder,"start_rcv_button"));
     yes_button = GTK_WIDGET(gtk_builder_get_object(builder,"yes_button"));
     no_button = GTK_WIDGET(gtk_builder_get_object(builder,"no_button"));
+    recieve_cancel_button = GTK_WIDGET(gtk_builder_get_object(builder,"recieve_cancel_button"));
+    send_cancel_button = GTK_WIDGET(gtk_builder_get_object(builder,"send_cancel_button"));
     ip_input = GTK_ENTRY(gtk_builder_get_object(builder,"input_ip"));
 
     gtk_style_context_add_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(cssloader), GTK_STYLE_PROVIDER_PRIORITY_USER);
 
-    g_signal_connect (send_button, "clicked", G_CALLBACK (on_send_button_clicked), NULL);
-    g_signal_connect (recieve_button, "clicked", G_CALLBACK (on_recieve_button_clicked), NULL);
-    g_signal_connect (yes_button, "clicked", G_CALLBACK (on_yes_button_clicked), NULL);
-    g_signal_connect (no_button, "clicked", G_CALLBACK (on_no_button_clicked), NULL);
-    g_signal_connect (main_screen, "destroy", G_CALLBACK (on_window_main_destroy), NULL);
-    g_signal_connect (recieve_screen, "destroy", G_CALLBACK (on_recieve_screen_destroy), NULL);
-    g_signal_connect (send_screen, "destroy", G_CALLBACK (on_send_screen_destroy), NULL);
-    g_signal_connect (intermediate_rcv, "destroy", G_CALLBACK (on_intermediate_rcv_destroy), NULL);
+    g_signal_connect(send_button, "clicked", G_CALLBACK (on_send_button_clicked), NULL);
+    g_signal_connect(recieve_button, "clicked", G_CALLBACK (on_recieve_button_clicked), NULL);
+    g_signal_connect(yes_button, "clicked", G_CALLBACK (on_yes_button_clicked), NULL);
+    g_signal_connect(no_button, "clicked", G_CALLBACK (on_no_button_clicked), NULL);
+    g_signal_connect(start_rcv_button, "clicked", G_CALLBACK (on_start_recieving), NULL);
+    g_signal_connect(recieve_cancel_button, "clicked", G_CALLBACK (on_recieve_cancel_button_clicked), NULL);
+    g_signal_connect(send_cancel_button, "clicked", G_CALLBACK (on_send_cancel_button_clicked), NULL);
+        
+    g_signal_connect(main_screen, "destroy", G_CALLBACK (on_window_main_destroy), NULL);
+    g_signal_connect(recieve_screen, "destroy", G_CALLBACK (on_recieve_screen_destroy), NULL);
+    g_signal_connect(send_screen, "destroy", G_CALLBACK (on_send_screen_destroy), NULL);
+    g_signal_connect(intermediate_rcv, "destroy", G_CALLBACK (on_intermediate_rcv_destroy), NULL);
+    
     g_object_unref(builder);
 
     gtk_widget_show_all(main_screen);                

@@ -14,7 +14,9 @@ GtkWidget
           *recieve_button,
           *start_rcv_button,
           *yes_button,
-          *no_button;
+          *no_button,
+          *recieve_cancel_button,
+          *send_cancel_button;
 
 GtkProgressBar
         *send_bar,
@@ -39,3 +41,5 @@ void on_start_recieving();
 void on_send_screen_destroy();
 void on_recieve_screen_destroy();
 void on_intermediate_rcv_destroy();
+void on_recieve_cancel_button_clicked();
+void on_send_cancel_button_clicked();

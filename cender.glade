@@ -50,6 +50,7 @@
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
             <property name="image_position">right</property>
+            <signal name="clicked" handler="on_start_recieving" swapped="no"/>
           </object>
           <packing>
             <property name="x">190</property>
@@ -223,8 +224,8 @@
             <property name="can_focus">False</property>
           </object>
           <packing>
-            <property name="x">94</property>
-            <property name="y">137</property>
+            <property name="x">64</property>
+            <property name="y">136</property>
           </packing>
         </child>
         <child>
@@ -236,8 +237,23 @@
             <property name="label" translatable="yes">recieving....</property>
           </object>
           <packing>
-            <property name="x">33</property>
+            <property name="x">21</property>
             <property name="y">48</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="recieve_cancel_button">
+            <property name="label" translatable="yes">Cancel</property>
+            <property name="width_request">90</property>
+            <property name="height_request">74</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <signal name="clicked" handler="on_recieve_cancel_button_clicked" swapped="no"/>
+          </object>
+          <packing>
+            <property name="x">175</property>
+            <property name="y">191</property>
           </packing>
         </child>
       </object>
@@ -262,8 +278,8 @@
             <property name="can_focus">False</property>
           </object>
           <packing>
-            <property name="x">90</property>
-            <property name="y">160</property>
+            <property name="x">73</property>
+            <property name="y">116</property>
           </packing>
         </child>
         <child>
@@ -279,8 +295,8 @@
             </attributes>
           </object>
           <packing>
-            <property name="x">32</property>
-            <property name="y">75</property>
+            <property name="x">24</property>
+            <property name="y">43</property>
           </packing>
         </child>
         <child>
@@ -294,6 +310,21 @@
           <packing>
             <property name="x">32</property>
             <property name="y">18</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="send_cancel_button">
+            <property name="label" translatable="yes">Cancel</property>
+            <property name="width_request">100</property>
+            <property name="height_request">80</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <signal name="clicked" handler="on_send_cancel_button_clicked" swapped="no"/>
+          </object>
+          <packing>
+            <property name="x">175</property>
+            <property name="y">180</property>
           </packing>
         </child>
       </object>
