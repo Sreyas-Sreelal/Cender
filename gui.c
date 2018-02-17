@@ -7,43 +7,9 @@ extern int confirm;
 
 void on_send_button_clicked()
 {
-    
-    int result,addrlen;
-    PHOSTENT hostinfo;
-    char name[255],*ip;
     gtk_widget_hide(main_screen); 
-    gtk_widget_show(send_screen);   
-   
-    //char info[55];
-    DLLVERSION = MAKEWORD(2,1);
-    if(WSAStartup(DLLVERSION,&wsdata)!=0)
-    {
-        printf("Error!!!");
-        return;
-    }
+    gtk_widget_show(send_screen);
 
-    addr.sin_addr.s_addr = inet_addr("0.0.0.0");
-    addr.sin_port = htons(7089);
-    addr.sin_family = AF_INET;
-    listener = socket(AF_INET,SOCK_STREAM,0);
-    printf("Reached sndclikc\n");
-    result = bind(listener,(SOCKADDR*)&addr,sizeof(addr));
-    gethostname(name,sizeof(name));
-    hostinfo = gethostbyname(name);
-    ip = inet_ntoa(*(struct in_addr *)hostinfo->h_addr_list[0]);
-    printf("Ip is %s \n",ip);
-
-    gtk_label_set_text(info_label,ip);
-    
-    if (result == SOCKET_ERROR) 
-    {
-        printf("bind failed with error: %d\n", WSAGetLastError());
-        return;
-    }
-
-    addrlen = sizeof(addr);
-    listen(listener,SOMAXCONN);    
-    
     char *filename;
     GtkWidget *dialog;
     GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_OPEN;
@@ -61,10 +27,47 @@ void on_send_button_clicked()
     
     if (res == GTK_RESPONSE_ACCEPT)
     {
+        int result,addrlen;
+        PHOSTENT hostinfo;
+        char name[255],*ip;
+           
+       
+        //char info[55];
+        DLLVERSION = MAKEWORD(2,1);
+        if(WSAStartup(DLLVERSION,&wsdata)!=0)
+        {
+            printf("Error!!!");
+            on_send_cancel_button_clicked();
+            return;
+        }
+    
+        addr.sin_addr.s_addr = inet_addr("0.0.0.0");
+        addr.sin_port = htons(7089);
+        addr.sin_family = AF_INET;
+        listener = socket(AF_INET,SOCK_STREAM,0);
+        printf("Reached sndclikc\n");
+        result = bind(listener,(SOCKADDR*)&addr,sizeof(addr));
+        gethostname(name,sizeof(name));
+        hostinfo = gethostbyname(name);
+        ip = inet_ntoa(*(struct in_addr *)hostinfo->h_addr_list[0]);
+        printf("Ip is %s \n",ip);
+    
+        gtk_label_set_text(info_label,ip);
+        
+        if (result == SOCKET_ERROR) 
+        {
+            printf("bind failed with error: %d\n", WSAGetLastError());
+            on_send_cancel_button_clicked();
+            return;
+        }
+    
+        addrlen = sizeof(addr);
+        listen(listener,SOMAXCONN);    
+
         GtkFileChooser *chooser = GTK_FILE_CHOOSER (dialog);
         filename = gtk_file_chooser_get_filename (chooser);
+        
         gtk_widget_destroy (dialog);
-        gtk_widget_show(send_screen);
         conn = accept(listener,(SOCKADDR*)&addr,&addrlen);
         
         if(conn == 0)
@@ -74,7 +77,11 @@ void on_send_button_clicked()
             filesend(filename);
 
     }
-    
+    else
+    {
+        gtk_widget_destroy (dialog);
+        on_send_cancel_button_clicked();
+    }
     
 }
 
@@ -98,6 +105,7 @@ void on_start_recieving()
     if(WSAStartup(DLLVERSION,&wsdata)!=0)
     {
         printf("Error!!!");
+        on_recieve_cancel_button_clicked();
         return;
     }
     
@@ -114,6 +122,7 @@ void on_start_recieving()
     if(connect(conn,(SOCKADDR*)&addr,addrlen) != 0)
     {
         printf("conn error !!!! %ld ",WSAGetLastError());
+        on_recieve_cancel_button_clicked();
         return;
     }
     
