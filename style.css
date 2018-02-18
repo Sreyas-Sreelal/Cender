@@ -7,27 +7,21 @@
   font: Georgia Bold 100px;
 }
 
-.button:hover{
+.button:hover
+{
   background: linear-gradient(to right, #fe8c00, #f83600);
   color: rgba(0, 0, 0, 0.00);
   border-radius: 120px;
 }
 
-
-
-.button:active {
+.button:active 
+{
   background: #0173D9;
 }
 
-GtkWindow{
+GtkWindow
+{
   background :white;
   color:white;
-
 }
 
-fraction 
-{
-  background: rgb(255, 0, 4);
-  color: rgba(83,165,198,255);
-
-}
