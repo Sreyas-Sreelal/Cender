@@ -1,28 +1,33 @@
-.button{
-  background:  greenyellow;
+.button
+{
+  background:  linear-gradient(to right, #56ccf2, #2f80ed);
   border:none;
   color: rgba(0, 0, 0, 0.00);
   border-radius: 120px;
+  font: Georgia Bold 100px;
 }
 
 .button:hover{
-  background: orange;
+  background: linear-gradient(to right, #fe8c00, #f83600);
   color: rgba(0, 0, 0, 0.00);
   border-radius: 120px;
 }
 
-GtkLabel #Title{
-  background: #0087FF;
-}
+
 
 .button:active {
   background: #0173D9;
 }
 
 GtkWindow{
-  background:white;
+  background :white;
+  color:white;
+
 }
 
-GtkProgressBar #progress{
+fraction 
+{
   background: rgb(255, 0, 4);
+  color: rgba(83,165,198,255);
+
 }

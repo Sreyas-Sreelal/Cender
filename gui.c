@@ -77,6 +77,7 @@ void on_send_button_clicked()
             filesend(filename);
 
     }
+    
     else
     {
         gtk_widget_destroy (dialog);
