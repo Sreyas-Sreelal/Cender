@@ -27,6 +27,7 @@ int senddata(SOCKET sock, void *buf, int buflen)
             }
             
             printf("\n2nd SOCKET_ERROR\n DESC = %ld",WSAGetLastError());
+            showdialog(send_screen,GTK_MESSAGE_ERROR,"Socket error transfer failed!!");
             return 0;
         
         }
@@ -50,10 +51,7 @@ int sendlong(SOCKET sock, long value)
 
 int sendfile(SOCKET sock, FILE *f)
 {
-    
-    while (gtk_events_pending ())
-        gtk_main_iteration_do (FALSE);
-  
+    UPDATE_GUI();
     fseek(f, 0, SEEK_END);
     
     gfloat progress = 0.0;
@@ -90,8 +88,9 @@ int sendfile(SOCKET sock, FILE *f)
                 
         }while (filesize > 0);
     }
-  
-
+    gtk_progress_bar_set_fraction(send_bar,0);
+    showdialog(send_screen,GTK_MESSAGE_INFO,"File send successfully");
+    
     return 1;
 
 }
@@ -118,11 +117,13 @@ int readdata(SOCKET sock, void *buf, int buflen)
             }
             
             printf("2nd SOCKET_ERROR\n DESC = %ld",WSAGetLastError());
+            showdialog(recieve_screen,GTK_MESSAGE_ERROR,"Socket error transfer failed!!");
             return 0;
         }
         
         else if (num == 0){
             printf("NUM==0 error!!");
+            showdialog(recieve_screen,GTK_MESSAGE_ERROR,"Read zero data from server process terminated!!");
         
             return 0;
         }
@@ -173,6 +174,7 @@ int readfile(SOCKET sock, FILE *f)
             if (!readdata(sock, buffer, num))
             {
                 printf("Data problem\n");
+                showdialog(recieve_screen,GTK_MESSAGE_ERROR,"Data error reading buffer failed!!");
                 return 0;
             }
                         
@@ -241,18 +243,20 @@ void recievefile()
         fclose(filehandle);
     
         if (ok)
-        {
-            printf("FIle is ok!!!");
-        }
+            showdialog(recieve_screen,GTK_MESSAGE_INFO,"File recieved!");
+        
         
         else
         {
             printf("ERRORROROROROOROR NOT OKAY :(((\n");
+            showdialog(recieve_screen,GTK_MESSAGE_ERROR,"File transfer failed.Data send is corrupted!"); 
             remove(filename);
         }
+    
     }
     
     printf("\nDone\n");
+    gtk_progress_bar_set_fraction(recieve_bar,0);
     closesocket(conn);
     WSACleanup();
     gtk_widget_hide(recieve_screen);

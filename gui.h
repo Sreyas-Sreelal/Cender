@@ -11,7 +11,6 @@ GtkWidget
           *recieve_screen,
           *send_screen,
           *intermediate_rcv,
-          *msgbox,
           *send_button,
           *recieve_button,
           *start_rcv_button,
@@ -37,12 +36,10 @@ void gui_init();
 void on_window_main_destroy();
 void on_send_button_clicked();
 void on_recieve_button_clicked();
-void on_yes_button_clicked();
-void on_no_button_clicked();
 void on_start_recieving();
 void on_send_screen_destroy();
 void on_recieve_screen_destroy();
 void on_intermediate_rcv_destroy();
 void on_recieve_cancel_button_clicked();
 void on_send_cancel_button_clicked();
-void showdialog(const char*);
+void showdialog(GtkWidget*,GtkMessageType,const char* message);

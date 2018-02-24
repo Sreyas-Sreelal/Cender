@@ -5,6 +5,17 @@
 
 extern int confirm;
 
+void showdialog(GtkWidget* parent,GtkMessageType type,const char* message)
+{
+    GtkWidget* dialog = gtk_message_dialog_new ((GtkWindow*)parent,
+                                     GTK_DIALOG_DESTROY_WITH_PARENT,
+                                     type,
+                                     GTK_BUTTONS_CLOSE,
+                                     message);
+    gtk_dialog_run (GTK_DIALOG (dialog));
+    gtk_widget_destroy (dialog);
+}
+
 void on_send_button_clicked()
 {
     gtk_widget_hide(main_screen); 
@@ -59,6 +70,7 @@ void on_send_button_clicked()
         if (result == SOCKET_ERROR) 
         {
             printf("bind failed with error: %d\n", WSAGetLastError());
+            showdialog(send_screen,GTK_MESSAGE_ERROR,"Server bind failed!");
             on_send_cancel_button_clicked();
             return;
         }
@@ -73,7 +85,8 @@ void on_send_button_clicked()
         conn = accept(listener,(SOCKADDR*)&addr,&addrlen);
         
         if(conn == 0)
-            printf("Erorr geting conection!!!");
+        showdialog(send_screen,GTK_MESSAGE_ERROR,"Error getting connection!!");
+            
         
         else
             filesend(filename);
@@ -108,6 +121,7 @@ void on_start_recieving()
     if(WSAStartup(DLLVERSION,&wsdata)!=0)
     {
         printf("Error!!!");
+        showdialog(recieve_screen,GTK_MESSAGE_ERROR,"WSA startup failed!!");
         on_recieve_cancel_button_clicked();
         return;
     }
@@ -125,6 +139,7 @@ void on_start_recieving()
     if(connect(conn,(SOCKADDR*)&addr,addrlen) != 0)
     {
         printf("conn error !!!! %ld ",WSAGetLastError());
+        showdialog(recieve_screen,GTK_MESSAGE_ERROR,"Connection error!!");
         on_recieve_cancel_button_clicked();
         return;
     }
@@ -182,25 +197,7 @@ void on_recieve_screen_destroy()
 
 }
 
-void on_yes_button_clicked()
-{
-    
-    printf("Clicked yes\n");
-    confirm = 1;
-    gtk_widget_show(main_screen);     
-    gtk_widget_hide(msgbox);     
 
-}
-
-void on_no_button_clicked()
-{ 
-    
-    printf("Clicked no\n");
-    confirm = 0;
-    gtk_widget_show(main_screen);
-    gtk_widget_hide(msgbox);     
-
-}
 
 void gui_init()
 {
@@ -214,7 +211,6 @@ void gui_init()
     recieve_screen = GTK_WIDGET(gtk_builder_get_object(builder, "recieve_screen"));
     send_screen = GTK_WIDGET(gtk_builder_get_object(builder, "send_screen"));
     intermediate_rcv = GTK_WIDGET(gtk_builder_get_object(builder, "intermediate_rcv"));
-    msgbox = GTK_WIDGET(gtk_builder_get_object(builder,"msgbox"));
     send_label = GTK_LABEL(gtk_builder_get_object(builder,"send_label"));
     recieve_label = GTK_LABEL(gtk_builder_get_object(builder,"recieve_label"));
     info_label = GTK_LABEL(gtk_builder_get_object(builder,"info_lbl"));
@@ -223,8 +219,6 @@ void gui_init()
     send_button = GTK_WIDGET(gtk_builder_get_object(builder,"send_button"));
     recieve_button = GTK_WIDGET(gtk_builder_get_object(builder,"recieve_button"));
     start_rcv_button = GTK_WIDGET(gtk_builder_get_object(builder,"start_rcv_button"));
-    yes_button = GTK_WIDGET(gtk_builder_get_object(builder,"yes_button"));
-    no_button = GTK_WIDGET(gtk_builder_get_object(builder,"no_button"));
     recieve_cancel_button = GTK_WIDGET(gtk_builder_get_object(builder,"recieve_cancel_button"));
     send_cancel_button = GTK_WIDGET(gtk_builder_get_object(builder,"send_cancel_button"));
     ip_input = GTK_ENTRY(gtk_builder_get_object(builder,"input_ip"));
@@ -233,8 +227,6 @@ void gui_init()
 
     g_signal_connect(send_button, "clicked", G_CALLBACK (on_send_button_clicked), NULL);
     g_signal_connect(recieve_button, "clicked", G_CALLBACK (on_recieve_button_clicked), NULL);
-    g_signal_connect(yes_button, "clicked", G_CALLBACK (on_yes_button_clicked), NULL);
-    g_signal_connect(no_button, "clicked", G_CALLBACK (on_no_button_clicked), NULL);
     g_signal_connect(start_rcv_button, "clicked", G_CALLBACK (on_start_recieving), NULL);
     g_signal_connect(recieve_cancel_button, "clicked", G_CALLBACK (on_recieve_cancel_button_clicked), NULL);
     g_signal_connect(send_cancel_button, "clicked", G_CALLBACK (on_send_cancel_button_clicked), NULL);
