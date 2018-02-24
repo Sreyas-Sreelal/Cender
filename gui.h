@@ -1,5 +1,7 @@
 #include<gtk/gtk.h>
 
+#define UPDATE_GUI() while(gtk_events_pending())gtk_main_iteration_do(FALSE)
+
 GtkBuilder *builder; 
 
 GtkCssProvider *cssloader;
@@ -43,3 +45,4 @@ void on_recieve_screen_destroy();
 void on_intermediate_rcv_destroy();
 void on_recieve_cancel_button_clicked();
 void on_send_cancel_button_clicked();
+void showdialog(const char*);

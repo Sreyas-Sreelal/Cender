@@ -86,8 +86,7 @@ int sendfile(SOCKET sock, FILE *f)
             //printf("progress : %f\n",progress);
             gtk_progress_bar_set_fraction(send_bar,progress/fixedsize);
             
-            while (gtk_events_pending ()) 
-                gtk_main_iteration_do (FALSE);
+            UPDATE_GUI();
                 
         }while (filesize > 0);
     }
@@ -149,8 +148,7 @@ int readlong(SOCKET sock, long *value)
 int readfile(SOCKET sock, FILE *f)
 {
     
-    while (gtk_events_pending ())
-        gtk_main_iteration_do (FALSE);
+    UPDATE_GUI();
 
     long filesize;
     gfloat progress=0.0;
@@ -191,8 +189,7 @@ int readfile(SOCKET sock, FILE *f)
             //printf("progress : %f\n",progress);
             gtk_progress_bar_set_fraction(recieve_bar,progress/fixedsize);
             
-            while (gtk_events_pending ())
-                gtk_main_iteration_do (FALSE);
+            UPDATE_GUI();
           
         } while (filesize > 0);
     }

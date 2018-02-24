@@ -54,6 +54,8 @@ void on_send_button_clicked()
     
         gtk_label_set_text(info_label,ip);
         
+        UPDATE_GUI();
+        
         if (result == SOCKET_ERROR) 
         {
             printf("bind failed with error: %d\n", WSAGetLastError());
