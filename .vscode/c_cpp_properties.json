@@ -46,6 +46,15 @@
             "name": "Win32",
             "includePath": [
                 "C:/Program Files (x86)/Windows Kits/10/Include/10.0.10240.0/ucrt",
+                "C:/MinGW/include",
+                "C:/MinGW/include/gtk-3.0",
+                "C:/MinGW/include/glib-2.0",
+                "C:/MinGW/lib/gcc/mingw32/6.3.0/include",
+                "C:/MinGW/lib/glib-2.0/include",
+                "C:/MinGW/include/pango-1.0",
+                "C:/MinGW/include/cairo",
+                "C:/MinGW/include/gdk-pixbuf-2.0",
+                "C:/MinGW/include/atk-1.0",
                 "${workspaceRoot}"
             ],
             "defines": [
@@ -56,6 +65,15 @@
             "browse": {
                 "path": [
                     "C:/Program Files (x86)/Windows Kits/10/Include/10.0.10240.0/ucrt",
+                    "C:/MinGW/include",
+                    "C:/MinGW/include/gtk-3.0",
+                    "C:/MinGW/include/glib-2.0",
+                    "C:/MinGW/lib/gcc/mingw32/6.3.0/include",
+                    "C:/MinGW/lib/glib-2.0/include",
+                    "C:/MinGW/include/pango-1.0",
+                    "C:/MinGW/include/cairo",
+                    "C:/MinGW/include/gdk-pixbuf-2.0",
+                    "C:/MinGW/include/atk-1.0",
                     "${workspaceRoot}"
                 ],
                 "limitSymbolsToIncludedHeaders": true,

@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "string.h": "c",
-        "assert.h": "c"
+        "assert.h": "c",
+        "winsock2.h": "c"
     }
 }
