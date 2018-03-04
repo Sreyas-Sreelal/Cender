@@ -3,8 +3,6 @@
 #include "gui.h"
 #include "network.h"
 
-extern int confirm;
-
 void showdialog(GtkWidget* parent,GtkMessageType type,const char* message)
 {
     GtkWidget* dialog = gtk_message_dialog_new ((GtkWindow*)parent,
@@ -196,7 +194,6 @@ void on_recieve_screen_destroy()
     gtk_main_quit();
 
 }
-
 
 
 void gui_init()

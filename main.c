@@ -7,7 +7,6 @@
 #include "main.h"
 #include "gui.h"
 
-//#define G_MODULE_EXPORT		__declspec(dllexport)
 
 void main(int argc, char *argv[])
 {
