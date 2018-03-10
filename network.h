@@ -11,6 +11,7 @@ int sendfile(SOCKET, FILE*);
 int readdata(SOCKET, void*,int);
 int readlong(SOCKET, long*);
 int readfile(SOCKET, FILE*);
-void filesend();
+int filesend(char*);
 void recievefile();
+gpointer start_threaded_send(gpointer);
 
