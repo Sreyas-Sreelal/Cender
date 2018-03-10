@@ -1,2 +1,2 @@
-#define DEBUG(st) printf("[DEBUG]" st)  
+#define DEBUG(st) printf("[DEBUG] " st "\n")  
 //int confirm;
