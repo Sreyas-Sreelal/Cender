@@ -2,6 +2,8 @@
     "files.associations": {
         "string.h": "c",
         "assert.h": "c",
-        "winsock2.h": "c"
+        "winsock2.h": "c",
+        "network.h": "c",
+        "gtk.h": "c"
     }
 }
