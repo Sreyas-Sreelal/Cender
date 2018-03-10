@@ -3,19 +3,61 @@
 #include "gui.h"
 #include "network.h"
 
+
+void fadeoutscreen(GtkWidget *which_screen) 
+{
+     //Sleep(3000);
+    gtk_widget_hide(which_screen);
+    gtk_widget_show(main_screen);
+    UPDATE_GUI();
+}
+
+
 void showdialog(GtkWidget* parent,GtkMessageType type,const char* message)
 {
+    
     GtkWidget* dialog = gtk_message_dialog_new ((GtkWindow*)parent,
                                      GTK_DIALOG_DESTROY_WITH_PARENT,
                                      type,
                                      GTK_BUTTONS_CLOSE,
                                      message);
     gtk_dialog_run (GTK_DIALOG (dialog));
+    UPDATE_GUI();
     gtk_widget_destroy (dialog);
+    if(parent!=main_screen)
+    {
+        printf("parent!=main_screen\n");
+        gtk_widget_hide(parent);
+        gtk_widget_show(main_screen);
+    }
+}
+
+gboolean showdialog_threaded(void *args)
+{
+    struct dialog_args *dargs = args;
+    if(dargs->screen == NULL || dargs==NULL)
+        return FALSE;
+    printf("Screen is %s",dargs->screen);
+    showdialog((!strcmp(dargs->screen,"send_screen")) ? send_screen : recieve_screen,dargs->dialog_type,dargs->message);
+    g_slice_free(struct dialog_args, dargs);
+    return FALSE;
+}
+
+gboolean set_progress_threaded(void *args)
+{
+    struct progress_args *pargs = args;
+    if(pargs== NULL || pargs->bar==NULL)
+        return FALSE;
+    printf("\ncalled set_progress_threaded with name as %s \n",pargs->bar);
+    gtk_progress_bar_set_fraction((!strcmp(pargs->bar,"send_bar")) ? send_bar : recieve_bar,pargs->value);
+    UPDATE_GUI();
+    return FALSE;
 }
 
 void on_send_button_clicked()
 {
+    gtk_progress_bar_set_fraction(send_bar,0);
+    UPDATE_GUI();
     gtk_widget_hide(main_screen); 
     gtk_widget_show(send_screen);
 
@@ -38,10 +80,9 @@ void on_send_button_clicked()
     {
         int result,addrlen;
         PHOSTENT hostinfo;
-        char name[255],*ip;
+        char name[255],ip[25]="Connect to ";
            
        
-        //char info[55];
         DLLVERSION = MAKEWORD(2,1);
         if(WSAStartup(DLLVERSION,&wsdata)!=0)
         {
@@ -58,13 +99,12 @@ void on_send_button_clicked()
         result = bind(listener,(SOCKADDR*)&addr,sizeof(addr));
         gethostname(name,sizeof(name));
         hostinfo = gethostbyname(name);
-        ip = inet_ntoa(*(struct in_addr *)hostinfo->h_addr_list[0]);
+
+        strcat(ip,inet_ntoa(*(struct in_addr *)hostinfo->h_addr_list[0]));
         printf("Ip is %s \n",ip);
     
         gtk_label_set_text(info_label,ip);
-        
-        UPDATE_GUI();
-        
+            
         if (result == SOCKET_ERROR) 
         {
             printf("bind failed with error: %d\n", WSAGetLastError());
@@ -80,15 +120,10 @@ void on_send_button_clicked()
         filename = gtk_file_chooser_get_filename (chooser);
         
         gtk_widget_destroy (dialog);
-        conn = accept(listener,(SOCKADDR*)&addr,&addrlen);
+        UPDATE_GUI();
         
-        if(conn == 0)
-        showdialog(send_screen,GTK_MESSAGE_ERROR,"Error getting connection!!");
-            
+        g_thread_new("start_threaded_send",start_threaded_send,filename);
         
-        else
-            filesend(filename);
-
     }
     
     else
@@ -112,6 +147,7 @@ void on_start_recieving()
 {
     
     gtk_widget_hide(intermediate_rcv);
+    gtk_progress_bar_set_fraction(recieve_bar,0);
     char ip[15];
     strcpy(ip,gtk_entry_get_text (ip_input));
     printf("Ip entered is %s\n length is %d",ip,strlen(ip));
@@ -127,11 +163,11 @@ void on_start_recieving()
     int addrlen = sizeof(addr);
     addr.sin_port = htons(7089);
     addr.sin_family = AF_INET;
-    listener = socket(AF_INET,SOCK_STREAM,0);
+    addr.sin_addr.s_addr = inet_addr(ip);
 
     gtk_widget_show(recieve_screen);     
     //scanf(" %s",&ip);
-    addr.sin_addr.s_addr = inet_addr(ip);
+   
     conn = socket(AF_INET,SOCK_STREAM,0);
     
     if(connect(conn,(SOCKADDR*)&addr,addrlen) != 0)
@@ -143,7 +179,10 @@ void on_start_recieving()
     }
     
     else
-        recievefile();  
+        //recievefile();  
+        g_thread_new("start_threaded_recieve",(void*)recievefile,NULL);
+    
+        
 
 }
 
@@ -152,8 +191,7 @@ void on_recieve_cancel_button_clicked()
     
     closesocket(conn);
     WSACleanup();
-    gtk_widget_hide(recieve_screen);
-    gtk_widget_show(main_screen);
+    fadeoutscreen(recieve_screen);
 
 }
 
@@ -163,8 +201,7 @@ void on_send_cancel_button_clicked()
     closesocket(listener);
     closesocket(conn);
     WSACleanup();
-    gtk_widget_hide(send_screen);
-    gtk_widget_show(main_screen);
+    fadeoutscreen(send_screen);
 
 }
 

@@ -31,7 +31,20 @@ GtkLabel
         *recieve_label,
         *info_label;
         
-       
+
+struct dialog_args
+{
+        char *screen;
+        GtkMessageType dialog_type;
+        char* message;
+};
+
+struct progress_args
+{
+        char *bar;
+        gfloat value;
+};
+
 void gui_init();
 void on_window_main_destroy();
 void on_send_button_clicked();
@@ -43,3 +56,6 @@ void on_intermediate_rcv_destroy();
 void on_recieve_cancel_button_clicked();
 void on_send_cancel_button_clicked();
 void showdialog(GtkWidget*,GtkMessageType,const char* message);
+void fadeoutscreen(GtkWidget*);
+gboolean showdialog_threaded(void *);
+gboolean set_progress_threaded(void*);
