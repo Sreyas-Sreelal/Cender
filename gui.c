@@ -26,7 +26,9 @@ void showdialog(GtkWidget* parent,GtkMessageType type,const char* message)
     gtk_widget_destroy (dialog);
     if(parent!=main_screen)
     {
-        printf("parent!=main_screen\n");
+        #ifdef DBG_MODE
+            DEBUG("parent!=main_screen\n");
+        #endif
         gtk_widget_hide(parent);
         gtk_widget_show(main_screen);
     }
@@ -37,7 +39,9 @@ gboolean showdialog_threaded(void *args)
     struct dialog_args *dargs = args;
     if(dargs->screen == NULL || dargs==NULL)
         return FALSE;
-    printf("Screen is %s",dargs->screen);
+    #ifdef DBG_MODE
+        printf("Screen is %s",dargs->screen);
+    #endif
     showdialog((!strcmp(dargs->screen,"send_screen")) ? send_screen : recieve_screen,dargs->dialog_type,dargs->message);
     g_slice_free(struct dialog_args, dargs);
     return FALSE;
@@ -48,7 +52,9 @@ gboolean set_progress_threaded(void *args)
     struct progress_args *pargs = args;
     if(pargs== NULL || pargs->bar==NULL)
         return FALSE;
-    printf("\ncalled set_progress_threaded with name as %s \n",pargs->bar);
+    #ifdef DBG_MODE
+        printf("\ncalled set_progress_threaded with name as %s \n",pargs->bar);
+    #endif
     gtk_progress_bar_set_fraction((!strcmp(pargs->bar,"send_bar")) ? send_bar : recieve_bar,pargs->value);
     UPDATE_GUI();
     return FALSE;
@@ -95,14 +101,17 @@ void on_send_button_clicked()
         addr.sin_port = htons(7089);
         addr.sin_family = AF_INET;
         listener = socket(AF_INET,SOCK_STREAM,0);
-        printf("Reached sndclikc\n");
+        #ifdef DBG_MODE
+            DEBUG("Reached sndclikc\n");
+        #endif
         result = bind(listener,(SOCKADDR*)&addr,sizeof(addr));
         gethostname(name,sizeof(name));
         hostinfo = gethostbyname(name);
 
         strcat(ip,inet_ntoa(*(struct in_addr *)hostinfo->h_addr_list[0]));
-        printf("Ip is %s \n",ip);
-    
+        #ifdef DBG_MODE
+            printf("Ip is %s \n",ip);
+        #endif
         gtk_label_set_text(info_label,ip);
             
         if (result == SOCKET_ERROR) 
@@ -136,8 +145,9 @@ void on_send_button_clicked()
 
 void on_recieve_button_clicked()
 {
-   
-    printf("Reached on_recieve_button_clicked\n");
+    #ifdef DBG_MODE
+        DEBUG("Reached on_recieve_button_clicked\n");
+    #endif
     gtk_widget_hide(main_screen);
     gtk_widget_show(intermediate_rcv);
     
@@ -150,7 +160,9 @@ void on_start_recieving()
     gtk_progress_bar_set_fraction(recieve_bar,0);
     char ip[15];
     strcpy(ip,gtk_entry_get_text (ip_input));
-    printf("Ip entered is %s\n length is %d",ip,strlen(ip));
+    #ifdef DBG_MODE
+        printf("Ip entered is %s\n length is %d",ip,strlen(ip));
+    #endif
     DLLVERSION = MAKEWORD(2,1);
     if(WSAStartup(DLLVERSION,&wsdata)!=0)
     {
@@ -239,7 +251,6 @@ void gui_init()
     builder = gtk_builder_new();
     gtk_builder_add_from_file (builder, "cender.glade", NULL);
     gtk_css_provider_load_from_path(cssloader,"style.css",NULL);
-    printf("\nDebug\n");
     main_screen = GTK_WIDGET(gtk_builder_get_object(builder, "main_screen"));
     // gtk_builder_connect_signals(builder,NULL);
     recieve_screen = GTK_WIDGET(gtk_builder_get_object(builder, "recieve_screen"));

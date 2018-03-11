@@ -48,7 +48,9 @@ int sendlong(SOCKET sock, long value)
 
 int sendfile(SOCKET sock, FILE *f)
 {
-    DEBUG("inside sendfile");
+    #ifdef DBG_MODE
+        DEBUG("inside sendfile");
+    #endif
     fseek(f, 0, SEEK_END);
     
     gfloat progress = 0.0;
@@ -93,8 +95,7 @@ int sendfile(SOCKET sock, FILE *f)
         
         }while (filesize > 0);
     }
-    DEBUG("Done sending ");
-     //Sleep(2000);
+   
     g_slice_free(struct progress_args, pargs);
     return 1;
 
@@ -128,7 +129,9 @@ int readdata(SOCKET sock, void *buf, int buflen)
         
         else if (num == 0)
         {
-            printf("NUM==0 error!!");
+            #ifdef DBG_MODE
+                DEBUG("NUM==0 error!!");
+            #endif
             return 0;
         }
         
@@ -160,7 +163,9 @@ int readfile(SOCKET sock, FILE *f)
     long filesize;
     gfloat progress=0.0;
     if (!readlong(sock, &filesize)){
-        printf("Length problem \n");
+        #ifdef DBG_MODE
+            DEBUG("Length problem \n");
+        #endif
         return 0;
     }
     
@@ -180,7 +185,9 @@ int readfile(SOCKET sock, FILE *f)
 
             if (!readdata(sock, buffer, num))
             {
-                printf("Data problem\n");
+                #ifdef DBG_MODE
+                    DEBUG("**Reading from socket buffer failed or incomplete");
+                #endif
                 g_slice_free(struct progress_args, pargs);
                 return 0;
             }
@@ -199,9 +206,9 @@ int readfile(SOCKET sock, FILE *f)
             
             filesize -= num;
             progress += num;
-            //printf("progress : %f\n",progress);
-            //gtk_progress_bar_set_fraction(recieve_bar,progress/fixedsize);
-          
+            #ifdef DBG_MODE
+                printf("progress : %f\n",progress);
+            #endif
             pargs->value = progress/fixedsize;
             g_idle_add(set_progress_threaded,pargs);
 
@@ -219,7 +226,9 @@ int readfile(SOCKET sock, FILE *f)
 
 gpointer start_threaded_send(gpointer filename)
 {
-    printf("On start_threaded_send called\n ");
+    #ifdef DBG_MODE
+        DEBUG("On start_threaded_send called\n ");
+    #endif
     int addrlen = sizeof(addr);
     struct dialog_args *dargs = g_slice_new(struct dialog_args);
 
@@ -234,11 +243,15 @@ gpointer start_threaded_send(gpointer filename)
     }
     else
     {
-        printf("filename that going to send is %s \n",filename);
+        #ifdef DBG_MODE
+            printf("filename that going to send is %s \n",filename);
+        #endif
         int ok = filesend((char*)filename);
         if(ok)
         {
-            DEBUG("it's ok");
+            #ifdef DBG_MODE
+                DEBUG("**File send successfully");
+            #endif
             dargs->dialog_type = GTK_MESSAGE_INFO;
             dargs->message = "File send successfully!!";
             
@@ -246,7 +259,9 @@ gpointer start_threaded_send(gpointer filename)
             
         else
         {
-            DEBUG("it's not ok");
+            #ifdef DBG_MODE
+                DEBUG("!!File sending failed");
+            #endif
             dargs->dialog_type = GTK_MESSAGE_ERROR;
             dargs->message = "File transferring failed or cancelled!!";
         }
@@ -264,17 +279,22 @@ gpointer start_threaded_send(gpointer filename)
 int filesend(char filename[255])
 {
     int ok = 0;
-    DEBUG("inside filesend");
-    printf("%s....\n",filename);
-    printf("filename ippo sendum = %s length = %d",filename,strlen(filename));
+    #ifdef DBG_MODE
+        DEBUG("inside filesend");
+        printf("file name is %s....\n",filename);
+    #endif
     FILE *filehandle = fopen(filename, "rb");
     if (filehandle != NULL)
     {
         send(conn,filename,255,0);
-        DEBUG("\nsending filename is done ");
+        #ifdef DBG_MODE
+            DEBUG("\nsending filename is done ");
+        #endif
         char confirm[10];
         recv(conn,confirm,sizeof(confirm),0);
-        printf("Confirmation was : %s",confirm);
+        #ifdef DBG_MODE
+            printf("Confirmation was : %s",confirm);
+        #endif
         if(!strcmp("Y",confirm))
             ok = sendfile(conn, filehandle);
         fclose(filehandle);
@@ -295,14 +315,18 @@ void recievefile()
     dargs->screen = "recieve_screen";
 
     recv(conn,filename,sizeof(filename),0);
-    DEBUG("recieved name");
+    #ifdef DBG_MODE
+        DEBUG("recieved name");
+    #endif
     strcpy(opt,"Y");
     send(conn,opt,10,0);
-    DEBUG("\nsending confirmation is done");
     basename = strrchr(filename, '\\');
     ++basename;
-    printf("\nfile is %s\nbasename is %s\n",filename,basename);
-    printf("length = %d\n",strlen(basename));
+    #ifdef DBG_MODE
+        DEBUG("**Sending confirmation is done");
+        printf("\nfile is %s\nbasename is %s\n",filename,basename);    
+        printf("length = %d\n",strlen(basename));
+    #endif
     FILE *filehandle = fopen(basename, "wb");
     
     if (filehandle != NULL)
@@ -312,26 +336,25 @@ void recievefile()
     
         if (ok)
         {
-            DEBUG("it's ok");
+            #ifdef DBG_MODE
+                DEBUG("**Recieved successfully");
+            #endif
             dargs->dialog_type = GTK_MESSAGE_INFO;
             dargs->message = "File recieved successfully!!";
         }
             
         else
         {
-            DEBUG("it's not ok");
-            printf("ERRORROROROROOROR NOT OKAY :(((\n");
+            #ifdef DBG_MODE
+                DEBUG("!!Recieving failed");
+            #endif
             dargs->dialog_type = GTK_MESSAGE_ERROR;
             dargs->message = "File transferring failed or cancelled!!";
             remove(filename);
         }
     
     }
-    DEBUG("It's done recieveing");
     g_idle_add(showdialog_threaded,dargs);
     closesocket(conn);
     WSACleanup();
-     //Sleep(5000);
-     
-
 }
