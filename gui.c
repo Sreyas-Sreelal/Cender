@@ -56,7 +56,6 @@ gboolean set_progress_threaded(void *args)
         printf("\ncalled set_progress_threaded with name as %s \n",pargs->bar);
     #endif
     gtk_progress_bar_set_fraction((!strcmp(pargs->bar,"send_bar")) ? send_bar : recieve_bar,pargs->value);
-    UPDATE_GUI();
     return FALSE;
 }
 
