@@ -42,7 +42,7 @@ struct dialog_args
 struct progress_args
 {
         char *bar;
-        gfloat value;
+        long double value;
 };
 
 void gui_init();

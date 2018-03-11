@@ -53,7 +53,7 @@ int sendfile(SOCKET sock, FILE *f)
     #endif
     fseek(f, 0, SEEK_END);
     
-    gfloat progress = 0.0;
+    long double progress = 0.0;
     long filesize = ftell(f);
     long fixedsize = filesize;
    
@@ -161,7 +161,7 @@ int readfile(SOCKET sock, FILE *f)
     
     pargs->bar = "recieve_bar";
     long filesize;
-    gfloat progress=0.0;
+    long double progress=0.0;
     if (!readlong(sock, &filesize)){
         #ifdef DBG_MODE
             DEBUG("Length problem \n");
