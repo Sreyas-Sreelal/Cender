@@ -4,6 +4,7 @@
         "assert.h": "c",
         "winsock2.h": "c",
         "network.h": "c",
-        "gtk.h": "c"
+        "gtk.h": "c",
+        "stdio.h": "c"
     }
 }
