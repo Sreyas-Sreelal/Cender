@@ -40,7 +40,7 @@ int senddata(SOCKET sock, void *buf, int buflen)
 
 }
 
-int sendlong(SOCKET sock, long value)
+int sendlong(SOCKET sock, long long value)
 {
     value = htonl(value);
     return senddata(sock, &value, sizeof(value));
@@ -51,12 +51,14 @@ int sendfile(SOCKET sock, FILE *f)
     #ifdef DBG_MODE
         DEBUG("inside sendfile");
     #endif
-    fseek(f, 0, SEEK_END);
+    fseeko64(f, 0, SEEK_END);
     
     long double progress = 0.0;
-    long filesize = ftell(f);
+    long long filesize = ftello64(f);
     long fixedsize = filesize;
-   
+    #ifdef DBG_MODE
+        printf("[Debug] File size is : %lld ",filesize);
+    #endif
     rewind(f);
     
     if (filesize == EOF)
@@ -143,7 +145,7 @@ int readdata(SOCKET sock, void *buf, int buflen)
     return 1;
 }
 
-int readlong(SOCKET sock, long *value)
+int readlong(SOCKET sock, long long *value)
 {
     
     if (!readdata(sock, value, sizeof(value)))
@@ -160,7 +162,7 @@ int readfile(SOCKET sock, FILE *f)
     struct progress_args *pargs= g_slice_new(struct progress_args);
     
     pargs->bar = "recieve_bar";
-    long filesize;
+    long long filesize;
     long double progress=0.0;
     if (!readlong(sock, &filesize)){
         #ifdef DBG_MODE
@@ -169,8 +171,10 @@ int readfile(SOCKET sock, FILE *f)
         return 0;
     }
     
-    long fixedsize = filesize;
-    
+    long long fixedsize = filesize;
+    #ifdef DBG_MODE
+        printf("[Debug] File size is : %lld ",filesize);
+    #endif
     if (filesize > 0)
     {
         
@@ -283,7 +287,7 @@ int filesend(char filename[255])
         DEBUG("inside filesend");
         printf("file name is %s....\n",filename);
     #endif
-    FILE *filehandle = fopen(filename, "rb");
+    FILE *filehandle = fopen64(filename, "rb");
     if (filehandle != NULL)
     {
         send(conn,filename,255,0);
@@ -327,7 +331,7 @@ void recievefile()
         printf("\nfile is %s\nbasename is %s\n",filename,basename);    
         printf("length = %d\n",strlen(basename));
     #endif
-    FILE *filehandle = fopen(basename, "wb");
+    FILE *filehandle = fopen64(basename, "wb");
     
     if (filehandle != NULL)
     {
