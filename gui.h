@@ -1,3 +1,4 @@
+#pragma once
 #include<gtk/gtk.h>
 
 #define UPDATE_GUI() while(gtk_events_pending())gtk_main_iteration_do(FALSE)
