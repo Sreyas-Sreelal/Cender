@@ -112,7 +112,7 @@ void on_send_button_clicked()
             printf("Ip is %s \n",ip);
         #endif
         
-        if(!strcmp(ip,"127.0.0.1"))
+        if(!strcmp(ip,"Connect to 127.0.0.1"))
         {
             gtk_widget_destroy(dialog);
             showdialog(send_screen,GTK_MESSAGE_ERROR,"Please connect to a network before sending file!");
