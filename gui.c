@@ -101,7 +101,7 @@ void on_send_button_clicked()
         addr.sin_family = AF_INET;
         listener = socket(AF_INET,SOCK_STREAM,0);
         #ifdef DBG_MODE
-            DEBUG("Reached sndclikc\n");
+            DEBUG("Reached sndclikc\n"); 
         #endif
         result = bind(listener,(SOCKADDR*)&addr,sizeof(addr));
         gethostname(name,sizeof(name));
@@ -111,6 +111,15 @@ void on_send_button_clicked()
         #ifdef DBG_MODE
             printf("Ip is %s \n",ip);
         #endif
+        
+        if(!strcmp(ip,"127.0.0.1"))
+        {
+            gtk_widget_destroy(dialog);
+            showdialog(send_screen,GTK_MESSAGE_ERROR,"Please connect to a network before sending file!");
+            on_send_cancel_button_clicked();
+            retrun;
+        }
+
         gtk_label_set_text(info_label,ip);
             
         if (result == SOCKET_ERROR) 
@@ -124,10 +133,10 @@ void on_send_button_clicked()
         addrlen = sizeof(addr);
         listen(listener,SOMAXCONN);    
 
-        GtkFileChooser *chooser = GTK_FILE_CHOOSER (dialog);
-        filename = gtk_file_chooser_get_filename (chooser);
+        GtkFileChooser *chooser = GTK_FILE_CHOOSER(dialog);
+        filename = gtk_file_chooser_get_filename(chooser);
         
-        gtk_widget_destroy (dialog);
+        gtk_widget_destroy(dialog);
         UPDATE_GUI();
         
         g_thread_new("start_threaded_send",start_threaded_send,filename);
