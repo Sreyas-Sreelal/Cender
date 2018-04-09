@@ -117,7 +117,7 @@ void on_send_button_clicked()
             gtk_widget_destroy(dialog);
             showdialog(send_screen,GTK_MESSAGE_ERROR,"Please connect to a network before sending file!");
             on_send_cancel_button_clicked();
-            retrun;
+            return;
         }
 
         gtk_label_set_text(info_label,ip);
